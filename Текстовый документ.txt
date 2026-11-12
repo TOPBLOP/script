@@ -1,1 +1,8 @@
-sed -i 's/swww/awww/g' ~/.config/matugen/config.toml ~/.config/hypr/scripts/wppicker.sh ~/.config/hypr/hyprland.conf
+source = colors.conf
+source= ~/.config/hypr/configs/tags.conf
+source= ~/.config/hypr/configs/looknfeel.conf
+source= ~/.config/hypr/configs/UserAnimations.conf
+source = ~/.config/hypr/configs/windowrules.conf
+    vfr = true # save resources
+source= ~/.config/hypr/configs/input.conf
+source= ~/.config/hypr/configs/keybinds.conf
