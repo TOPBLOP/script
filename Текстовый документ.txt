@@ -1,1 +1,1 @@
-mv ~/.config/hypr/hyprland.lua ~/.config/hypr/hyprland.lua.bak && hyprctl reload
+sudo pacman -Rns hyprlua && hyprctl reload
