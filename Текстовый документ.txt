@@ -1,19 +1,10 @@
-cd ~/.config/waybar
-
-# Резервная копия, если активные файлы уже существуют
-mkdir -p ~/waybar-backup
-cp -L config ~/waybar-backup/config 2>/dev/null || true
-cp -L style.css ~/waybar-backup/style.css 2>/dev/null || true
-
-# Создаём отсутствующий дополнительный файл модулей
-touch UserModules
-
-# Активируем любимый верхний вариант автора
-ln -sfn "$HOME/.config/waybar/configs/[TOP] 0-Ja-0 Been modified" config
-
-# Активируем красивый стиль Islands
-ln -sfn "$HOME/.config/waybar/style/islands.css" style.css
-
-# Перезапускаем панель
-pkill waybar 2>/dev/null || true
-waybar >/tmp/waybar.log 2>&1 &
+❯ cat /tmp/waybar.log 
+[2026-11-12 10:01:28.756] [info] no JOURNAL_STREAM, logging to console
+[2026-11-12 10:01:28.803] [info] Using configuration file /home/lime/.config/waybar/config
+[2026-11-12 10:01:28.803] [info] Including resource file: $HOME/.config/waybar/Modules
+[2026-11-12 10:01:28.804] [info] Including resource file: $HOME/.config/waybar/ModulesWorkspaces
+[2026-11-12 10:01:28.804] [info] Including resource file: $HOME/.config/waybar/ModulesCustom
+[2026-11-12 10:01:28.805] [info] Including resource file: $HOME/.config/waybar/ModulesGroups
+[2026-11-12 10:01:28.805] [info] Including resource file: $HOME/.config/waybar/UserModules
+[2026-11-12 10:01:28.805] [error] Error parsing JSON: * Line 1, Column 1
+  Syntax error: value, object or array expected.
