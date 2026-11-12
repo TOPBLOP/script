@@ -1,10 +1,153 @@
-❯ cat /tmp/waybar.log 
-[2026-11-12 10:01:28.756] [info] no JOURNAL_STREAM, logging to console
-[2026-11-12 10:01:28.803] [info] Using configuration file /home/lime/.config/waybar/config
-[2026-11-12 10:01:28.803] [info] Including resource file: $HOME/.config/waybar/Modules
-[2026-11-12 10:01:28.804] [info] Including resource file: $HOME/.config/waybar/ModulesWorkspaces
-[2026-11-12 10:01:28.804] [info] Including resource file: $HOME/.config/waybar/ModulesCustom
-[2026-11-12 10:01:28.805] [info] Including resource file: $HOME/.config/waybar/ModulesGroups
-[2026-11-12 10:01:28.805] [info] Including resource file: $HOME/.config/waybar/UserModules
-[2026-11-12 10:01:28.805] [error] Error parsing JSON: * Line 1, Column 1
-  Syntax error: value, object or array expected.
+
+#!/usr/bin/env bash
+set -euo pipefail
+
+H="$HOME/.config/hypr/hyprland.conf"
+M="$HOME/.config/matugen/config.toml"
+S="$HOME/.config/hypr/scripts"
+W="$HOME/Pictures/wallpapers"
+
+# Проверяем программы и файлы
+for cmd in waybar awww awww-daemon matugen rofi python; do
+    command -v "$cmd" >/dev/null || {
+        echo "Не найдена программа: $cmd"
+        exit 1
+    }
+done
+
+[[ -f "$H" ]] || { echo "Не найден hyprland.conf"; exit 1; }
+[[ -f "$M" ]] || { echo "Не найден matugen config.toml"; exit 1; }
+
+# Резервные копии
+B="$HOME/.config/rice-backup-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$B"
+cp -a "$H" "$M" "$B/"
+[[ ! -f "$S/wppicker.sh" ]] || cp -a "$S/wppicker.sh" "$B/"
+
+mkdir -p "$S" "$W"
+
+# Автозапуск Waybar и обоев
+python - "$H" <<'PY'
+import sys, re
+p = sys.argv[1]
+with open(p, encoding="utf-8") as f:
+    lines = f.readlines()
+
+pattern = re.compile(
+    r'^\s*exec-once\s*=\s*(?:waybar(?:\s|$)|swww-daemon(?:\s|$)|awww-daemon(?:\s|$)|.*wallpaper-start\.sh)'
+)
+lines = [line for line in lines if not pattern.match(line)]
+lines += [
+    "\n# Rice autostart\n",
+    "exec-once = waybar\n",
+    "exec-once = ~/.config/hypr/scripts/wallpaper-start.sh\n"
+]
+with open(p, "w", encoding="utf-8") as f:
+    f.writelines(lines)
+PY
+
+# Настройка Matugen для Awww
+python - "$M" <<'PY'
+import sys, re
+p = sys.argv[1]
+with open(p, encoding="utf-8") as f:
+    data = f.read()
+
+section = '''[config.wallpaper]
+command = "awww"
+arguments = ["img", "--transition-type", "any", "--transition-duration", "1.5"]
+set = true
+
+'''
+if re.search(r'(?m)^\[config\.wallpaper\]', data):
+    data = re.sub(
+        r'(?ms)^\[config\.wallpaper\]\n.*?(?=^\[|\Z)',
+        section, data, count=1
+    )
+else:
+    data = section + data
+
+with open(p, "w", encoding="utf-8") as f:
+    f.write(data)
+PY
+
+# Демон и установка предыдущих обоев
+cat > "$S/wallpaper-start.sh" <<'SH'
+#!/usr/bin/env bash
+set -u
+
+W="$HOME/Pictures/wallpapers"
+LAST="$HOME/.config/hypr/current_wallpaper"
+
+if ! pgrep -u "$(id -u)" -x awww-daemon >/dev/null 2>&1; then
+    awww-daemon >> "$HOME/.cache/awww-daemon.log" 2>&1 &
+fi
+
+mkdir -p "$HOME/.cache"
+
+for i in {1..50}; do
+    awww query >/dev/null 2>&1 && break
+    sleep 0.2
+done
+
+if [[ -f "$LAST" ]]; then
+    IMAGE="$(readlink -f "$LAST")"
+elif [[ -f "$W/37.jpg" ]]; then
+    IMAGE="$W/37.jpg"
+else
+    IMAGE="$(find "$W" -maxdepth 1 -type f \
+      \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) \
+      -print -quit)"
+fi
+
+if [[ -n "${IMAGE:-}" && -f "$IMAGE" ]]; then
+    if command -v matugen >/dev/null; then
+        matugen image "$IMAGE" || awww img --transition-type fade "$IMAGE"
+    else
+        awww img --transition-type fade "$IMAGE"
+    fi
+fi
+SH
+
+chmod +x "$S/wallpaper-start.sh"
+
+# Новый выбор обоев
+cat > "$S/wppicker.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+
+W="$HOME/Pictures/wallpapers"
+LAST="$HOME/.config/hypr/current_wallpaper"
+
+mkdir -p "$W"
+mapfile -d '' -t FILES < <(
+    find "$W" -maxdepth 1 -type f \
+      \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) \
+      -print0 | sort -z
+)
+
+((${#FILES[@]})) || {
+    notify-send "Wallpapers" "Папка с обоями пуста"
+    exit 1
+}
+
+SELECTED="$(printf '%s\n' "${FILES[@]##*/}" | rofi -dmenu -i -p 'Choose wallpaper')"
+[[ -n "$SELECTED" ]] || exit 0
+
+IMAGE="$W/$SELECTED"
+[[ -f "$IMAGE" ]] || exit 1
+
+mkdir -p "$(dirname "$LAST")"
+ln -sfn "$IMAGE" "$LAST"
+
+if ! matugen image "$IMAGE"; then
+    awww img --transition-type any "$IMAGE"
+fi
+SH
+
+chmod +x "$S/wppicker.sh"
+
+echo
+echo "Настройка завершена!"
+echo "Резервная копия: $B"
+echo "Обои: $W"
