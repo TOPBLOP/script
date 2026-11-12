@@ -1,1 +1,1 @@
-sudo pacman -Rns hyprlua && hyprctl reload
+echo 'hypr.cmd.source("~/.config/hypr/hyprland.conf")' > ~/.config/hypr/hyprland.lua && hyprctl reload
