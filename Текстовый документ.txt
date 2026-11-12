@@ -1,10 +1,1 @@
-drwxr-xr-x    - lime 12 ноя 10:59  .
-drwxr-xr-x    - lime 12 ноя 10:28  ..
-drwxr-xr-x    - lime 12 ноя 09:06  configs
-drwxr-xr-x    - lime 12 ноя 10:59  scripts
-.rw-r--r-- 4,6k lime 12 ноя 10:41 󱁻 colors.conf
-lrwxrwxrwx    - lime 12 ноя 10:41 󰡯 current_wallpaper -> /home/lime/Pictures/wallpapers/118205900_p0.jpg
-.rw-r--r-- 1,3k lime 12 ноя 09:06  hypridle.conf
-.rw-r--r-- 2,6k lime 12 ноя 10:59  hyprland.conf
-.rw-r--r--  13k lime 12 ноя 09:35  hyprland.lua
-.rw-r--r-- 2,9k lime 12 ноя 09:06  hyprlock.conf
+mv ~/.config/hypr/hyprland.lua ~/.config/hypr/hyprland.lua.bak && hyprctl reload
