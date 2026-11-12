@@ -1,4 +1,7 @@
-head -n 15 ~/.config/hypr/hyprland.conf ~/.config/hypr/configs/keybinds.conf
 
-
+  cp -rf ~/rice/.config/hypr/* ~/.config/hypr/ && hyprctl reload
+fish: No matches for wildcard '~/rice/.config/hypr/*'. See `help language#wildcards-globbing`.
 cp -rf ~/rice/.config/hypr/* ~/.config/hypr/ && hyprctl reload
+       ^~~~~~~~~~~~~~~~~~~~^
+
+~
