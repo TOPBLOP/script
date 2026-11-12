@@ -1,1 +1,19 @@
-https://dsk29tvcm2ursf.azure-api.net/4rjry37wenfu4i/gQce6zoKuIUZjGWUE78bfwPiT80Wx8GUnMV5TYsXD3sgd8HQ4oH6PLQ
+cd ~/.config/waybar
+
+# Резервная копия, если активные файлы уже существуют
+mkdir -p ~/waybar-backup
+cp -L config ~/waybar-backup/config 2>/dev/null || true
+cp -L style.css ~/waybar-backup/style.css 2>/dev/null || true
+
+# Создаём отсутствующий дополнительный файл модулей
+touch UserModules
+
+# Активируем любимый верхний вариант автора
+ln -sfn "$HOME/.config/waybar/configs/[TOP] 0-Ja-0 Been modified" config
+
+# Активируем красивый стиль Islands
+ln -sfn "$HOME/.config/waybar/style/islands.css" style.css
+
+# Перезапускаем панель
+pkill waybar 2>/dev/null || true
+waybar >/tmp/waybar.log 2>&1 &
