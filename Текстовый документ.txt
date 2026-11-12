@@ -1,12 +1,1 @@
-❯ swww-daemon &
-
-[WARN]  failed to open cache dir at /home/lime/.cache/awww: No such file or directory (os error 2)
-[WARN]  failed to read cache file: No such file or directory (os error 2)
-~
-❯ awww-daemon
-
-thread '<unnamed>' (11510) panicked at daemon/src/main.rs:717:55:
-called `Result::unwrap()` on an `Err` value: "There is an awww-daemon instance already running on this socket!"
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-fatal runtime error: failed to initiate panic, error 5, aborting
-fish: Job 2, 'awww-daemon' terminated by signal SIGABRT (Abort)
+sed -i 's/swww/awww/g' ~/.config/matugen/config.toml ~/.config/hypr/scripts/wppicker.sh ~/.config/hypr/hyprland.conf
