@@ -1,44 +1,12 @@
-❯ tail -n 25 ~/.config/hypr/hyprland.conf && echo "---" && cat ~/.config/hypr/scripts/wppicker.sh
+❯ swww-daemon &
 
-# See https://wiki.hyprland.org/Configuring/Master-Layout/ for more
-master {
-    new_status = master
-}
+[WARN]  failed to open cache dir at /home/lime/.cache/awww: No such file or directory (os error 2)
+[WARN]  failed to read cache file: No such file or directory (os error 2)
+~
+❯ awww-daemon
 
-# https://wiki.hyprland.org/Configuring/Variables/#misc
-misc {
-    force_default_wallpaper = 0 # Set to 0 or 1 to disable the anime mascot wallpapers
-    disable_hyprland_logo = true # If true disables the random hyprland logo / anime girl background. :(
-    vfr = true # save resources
-}
-
-render {
-	new_render_scheduling = true
-}
-
-### INPUT ###
-source= ~/.config/hypr/configs/input.conf
-
-
-### KEYBINDS ###
-source= ~/.config/hypr/configs/keybinds.conf
-
-
----
-#!/usr/bin/env bash
-set -euo pipefail
-WALLPAPER_DIR="$HOME/Pictures/wallpapers"
-SYMLINK_PATH="$HOME/.config/hypr/current_wallpaper"
-mkdir -p "$WALLPAPER_DIR"
-command -v rofi >/dev/null || { notify-send "Wallpaper" "Не найден rofi"; exit 1; }
-command -v matugen >/dev/null || { notify-send "Wallpaper" "Не найден matugen"; exit 1; }
-mapfile -d '' -t files < <(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( \
-  -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.gif' -o -iname '*.webp' \
-  \) -print0 | sort -z)
-((${#files[@]})) || { notify-send "Wallpaper" "В ~/Pictures/wallpapers нет изображений"; exit 0; }
-selected="$(printf '%s\n' "${files[@]}" | sed "s|$WALLPAPER_DIR/||" | rofi -dmenu -i -p 'Wallpaper')"
-[[ -n "$selected" ]] || exit 0
-selected_path="$WALLPAPER_DIR/$selected"
-matugen image "$selected_path"
-mkdir -p "$(dirname "$SYMLINK_PATH")"
-ln -sfn "$selected_path" "$SYMLINK_PATH"
+thread '<unnamed>' (11510) panicked at daemon/src/main.rs:717:55:
+called `Result::unwrap()` on an `Err` value: "There is an awww-daemon instance already running on this socket!"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+fatal runtime error: failed to initiate panic, error 5, aborting
+fish: Job 2, 'awww-daemon' terminated by signal SIGABRT (Abort)
