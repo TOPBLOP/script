@@ -1,66 +1,57 @@
-[config.wallpaper]
-command = "swww"
-arguments = ["img", "--transition-type", "any", "--transition-fps", "60"]
-set = true
+ image }} keyword to set the wallpaper.
 
-[templates.waybar]
-input_path = '~/.config/matugen/templates/colors.css'
-output_path = '~/.config/waybar/colors.css'
-post_hook = 'pkill -SIGUSR2 waybar'
-
-[templates.kitty]
-input_path = '~/.config/matugen/templates/kitty-colors.conf'
-output_path = '~/.config/kitty/colors.conf'
-post_hook = "kill -SIGUSR1 $(pidof kitty)"
-
-[templates.hyprland]
-input_path = '~/.config/matugen/templates/hyprland-colors.conf'
-output_path = '~/.config/hypr/colors.conf'
-post_hook = 'hyprctl reload'
-
-[templates.gtk3]
-input_path = '~/.config/matugen/templates/gtk-colors.css'
-output_path = '~/.config/gtk-3.0/colors.css'
-
-[templates.gtk4]
-input_path = '~/.config/matugen/templates/gtk-colors.css'
-output_path = '~/.config/gtk-4.0/colors.css'
-
-[templates.rofi]
-input_path = '~/.config/matugen/templates/rofi-colors.rasi'
-output_path = '~/.config/rofi/colors.rasi'
-
-[templates.cava]
-input_path = '~/.config/matugen/templates/matugen-cava'
-output_path = '~/.config/cava/config'
-post_hook = "pkill -USR1 cava"
-
-[templates.spicetify]
-input_path = '~/.config/matugen/templates/spotify-colors.ini'
-output_path = '~/.config/spicetify/Themes/text/color.ini'
-
-[templates.vesktop]
-input_path = '~/.config/matugen/templates/midnight-discord.css'
-output_path = '~/.config/vesktop/themes/matugen.css'
-
-14:exec-once = nm-applet
-15:exec-once = waybar  
-16:exec-once = swww-daemon
-17:exec-once = blueman-applet
-18:exec-once = swaync
-19:exec-once = systemctl --user start hyprpolkitagent
-20:exec-once = hypridle
-
-"la": No such file or directory (os error 2)
-.rwxr-xr-x  493 lime 12 ноя 09:06  AirplaneMode.sh
-.rwxr-xr-x 1,6k lime 12 ноя 09:06  brightness.sh
-.rwxr-xr-x   20 lime 12 ноя 09:06  hyprlock.sh
-.rwxr-xr-x  262 lime 12 ноя 09:06  KillActiveProcess.sh
-.rwxr-xr-x   32 lime 12 ноя 09:06  screenshot.sh
-.rwxr-xr-x 3,7k lime 12 ноя 09:06  volume.sh
-.rwxr-xr-x 1,0k lime 12 ноя 09:06  waybarcava.sh
-.rwxr-xr-x 1,2k lime 12 ноя 09:06  WaybarLayout.sh
-.rwxr-xr-x 1,2k lime 12 ноя 09:06  WaybarStyles.sh
-.rwxr-xr-x   67 lime 12 ноя 09:06  wbrestart.sh
-.rwxr-xr-x   19 lime 12 ноя 09:06  Wlogout.sh
-.rwxr-xr-x  937 lime 12 ноя 09:23  wppicker.sh
+~ 8s
+❯ grep -rn "bind =" ~/.config/hypr/ 
+/home/lime/.config/hypr/configs/keybinds.conf:9:bind = $mainMod, Return, exec, $terminal
+/home/lime/.config/hypr/configs/keybinds.conf:10:bind = $mainMod SHIFT, RETURN, exec, [float; size 800 550] $terminal 
+/home/lime/.config/hypr/configs/keybinds.conf:11:bind = $mainMod, Q, killactive,
+/home/lime/.config/hypr/configs/keybinds.conf:12:bind = CTRL ALT, Delete, exec, hyprctl dispatch exit 0 # exit Hyprland
+/home/lime/.config/hypr/configs/keybinds.conf:13:bind = $mainMod, E, exec, $fileManager
+/home/lime/.config/hypr/configs/keybinds.conf:14:bind = $mainMod, Space, togglefloating,
+/home/lime/.config/hypr/configs/keybinds.conf:15:bind = $mainMod, D, exec, $menu
+/home/lime/.config/hypr/configs/keybinds.conf:16:bind = $mainMod, P, pseudo, # dwindle
+/home/lime/.config/hypr/configs/keybinds.conf:17:bind = $mainMod, J, togglesplit, # dwindle
+/home/lime/.config/hypr/configs/keybinds.conf:18:bind = $mainMod, R, exec, ~/.config/hypr/scripts/wbrestart.sh
+/home/lime/.config/hypr/configs/keybinds.conf:19:bind = $mainMod, B, exec, xdg-open "https://"  # default browser
+/home/lime/.config/hypr/configs/keybinds.conf:20:bind = $mainMod, L, exec, ~/.config/hypr/scripts/hyprlock.sh
+/home/lime/.config/hypr/configs/keybinds.conf:21:bind = $mainMod SHIFT, F, fullscreen
+/home/lime/.config/hypr/configs/keybinds.conf:22:bind = $mainMod SHIFT, S, exec, ~/.config/hypr/scripts/screenshot.sh
+/home/lime/.config/hypr/configs/keybinds.conf:23:bind = $mainMod, W, exec, ~/.config/hypr/scripts/wppicker.sh
+/home/lime/.config/hypr/configs/keybinds.conf:24:bind = $mainMod SHIFT, Q, exec, ~/.config/hypr/scripts/KillActiveProcess.sh # Kill active process
+/home/lime/.config/hypr/configs/keybinds.conf:25:bind = $mainMod, C, exec, hyprpicker -a
+/home/lime/.config/hypr/configs/keybinds.conf:26:bind = $mainMod CTRL, B, exec, ~/.config/hypr/scripts/WaybarStyles.sh # Waybar Styles Menu
+/home/lime/.config/hypr/configs/keybinds.conf:27:bind = $mainMod ALT, B, exec, ~/.config/hypr/scripts/WaybarLayout.sh # Waybar Layout Menu
+/home/lime/.config/hypr/configs/keybinds.conf:28:bind = $mainMod, H, exec, pkill -SIGUSR1 waybar # Hide Waybar
+/home/lime/.config/hypr/configs/keybinds.conf:29:bind = $mainMod SHIFT, E, exec, kitty yazi # Yazi File Manager
+/home/lime/.config/hypr/configs/keybinds.conf:32:bind = $mainMod, left, movefocus, l
+/home/lime/.config/hypr/configs/keybinds.conf:33:bind = $mainMod, right, movefocus, r
+/home/lime/.config/hypr/configs/keybinds.conf:34:bind = $mainMod, up, movefocus, u
+/home/lime/.config/hypr/configs/keybinds.conf:35:bind = $mainMod, down, movefocus, d
+/home/lime/.config/hypr/configs/keybinds.conf:38:bind = $mainMod CTRL, left, movewindow, l
+/home/lime/.config/hypr/configs/keybinds.conf:39:bind = $mainMod CTRL, right, movewindow, r
+/home/lime/.config/hypr/configs/keybinds.conf:40:bind = $mainMod CTRL, up, movewindow, u
+/home/lime/.config/hypr/configs/keybinds.conf:41:bind = $mainMod CTRL, down, movewindow, d
+/home/lime/.config/hypr/configs/keybinds.conf:50:bind = $mainMod, 1, workspace, 1
+/home/lime/.config/hypr/configs/keybinds.conf:51:bind = $mainMod, 2, workspace, 2
+/home/lime/.config/hypr/configs/keybinds.conf:52:bind = $mainMod, 3, workspace, 3
+/home/lime/.config/hypr/configs/keybinds.conf:53:bind = $mainMod, 4, workspace, 4
+/home/lime/.config/hypr/configs/keybinds.conf:54:bind = $mainMod, 5, workspace, 5
+/home/lime/.config/hypr/configs/keybinds.conf:55:bind = $mainMod, 6, workspace, 6
+/home/lime/.config/hypr/configs/keybinds.conf:56:bind = $mainMod, 7, workspace, 7
+/home/lime/.config/hypr/configs/keybinds.conf:57:bind = $mainMod, 8, workspace, 8
+/home/lime/.config/hypr/configs/keybinds.conf:58:bind = $mainMod, 9, workspace, 9
+/home/lime/.config/hypr/configs/keybinds.conf:59:bind = $mainMod, 0, workspace, 10
+/home/lime/.config/hypr/configs/keybinds.conf:62:bind = $mainMod SHIFT, 1, movetoworkspace, 1
+/home/lime/.config/hypr/configs/keybinds.conf:63:bind = $mainMod SHIFT, 2, movetoworkspace, 2
+/home/lime/.config/hypr/configs/keybinds.conf:64:bind = $mainMod SHIFT, 3, movetoworkspace, 3
+/home/lime/.config/hypr/configs/keybinds.conf:65:bind = $mainMod SHIFT, 4, movetoworkspace, 4
+/home/lime/.config/hypr/configs/keybinds.conf:66:bind = $mainMod SHIFT, 5, movetoworkspace, 5
+/home/lime/.config/hypr/configs/keybinds.conf:67:bind = $mainMod SHIFT, 6, movetoworkspace, 6
+/home/lime/.config/hypr/configs/keybinds.conf:68:bind = $mainMod SHIFT, 7, movetoworkspace, 7
+/home/lime/.config/hypr/configs/keybinds.conf:69:bind = $mainMod SHIFT, 8, movetoworkspace, 8
+/home/lime/.config/hypr/configs/keybinds.conf:70:bind = $mainMod SHIFT, 9, movetoworkspace, 9
+/home/lime/.config/hypr/configs/keybinds.conf:71:bind = $mainMod SHIFT, 0, movetoworkspace, 10
+/home/lime/.config/hypr/configs/keybinds.conf:74:#bind = $mainMod, S, togglespecialworkspace, magic
+/home/lime/.config/hypr/configs/keybinds.conf:75:#bind = $mainMod SHIFT, S, movetoworkspace, special:magic
+/home/lime/.config/hypr/configs/keybinds.conf:78:bind = $mainMod, mouse_down, workspace, e+1
+/home/lime/.config/hypr/configs/keybinds.conf:79:bind = $mainMod, mouse_up, workspace, e-1
