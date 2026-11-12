@@ -1,1 +1,2 @@
-echo 'hypr.cmd.source("~/.config/hypr/hyprland.conf")' > ~/.config/hypr/hyprland.lua && hyprctl reload
+cp ~/.config/hypr/hyprland.lua.bak ~/.config/hypr/hyprland.lua && hyprctl reload
+
