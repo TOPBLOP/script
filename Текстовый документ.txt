@@ -1,8 +1,5 @@
-source = colors.conf
-source= ~/.config/hypr/configs/tags.conf
-source= ~/.config/hypr/configs/looknfeel.conf
-source= ~/.config/hypr/configs/UserAnimations.conf
-source = ~/.config/hypr/configs/windowrules.conf
-    vfr = true # save resources
-source= ~/.config/hypr/configs/input.conf
-source= ~/.config/hypr/configs/keybinds.conf
+sed -i 's/swww-daemon/awww-daemon/g' ~/.config/hypr/hyprland.conf
+sed -i 's/swww/awww/g' ~/.config/hypr/scripts/*.sh ~/.config/matugen/config.toml 2>/dev/null
+chmod +x ~/.config/hypr/scripts/*.sh
+hyprctl reload
+
