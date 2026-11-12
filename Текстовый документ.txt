@@ -1,153 +1,66 @@
-
-#!/usr/bin/env bash
-set -euo pipefail
-
-H="$HOME/.config/hypr/hyprland.conf"
-M="$HOME/.config/matugen/config.toml"
-S="$HOME/.config/hypr/scripts"
-W="$HOME/Pictures/wallpapers"
-
-# Проверяем программы и файлы
-for cmd in waybar awww awww-daemon matugen rofi python; do
-    command -v "$cmd" >/dev/null || {
-        echo "Не найдена программа: $cmd"
-        exit 1
-    }
-done
-
-[[ -f "$H" ]] || { echo "Не найден hyprland.conf"; exit 1; }
-[[ -f "$M" ]] || { echo "Не найден matugen config.toml"; exit 1; }
-
-# Резервные копии
-B="$HOME/.config/rice-backup-$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$B"
-cp -a "$H" "$M" "$B/"
-[[ ! -f "$S/wppicker.sh" ]] || cp -a "$S/wppicker.sh" "$B/"
-
-mkdir -p "$S" "$W"
-
-# Автозапуск Waybar и обоев
-python - "$H" <<'PY'
-import sys, re
-p = sys.argv[1]
-with open(p, encoding="utf-8") as f:
-    lines = f.readlines()
-
-pattern = re.compile(
-    r'^\s*exec-once\s*=\s*(?:waybar(?:\s|$)|swww-daemon(?:\s|$)|awww-daemon(?:\s|$)|.*wallpaper-start\.sh)'
-)
-lines = [line for line in lines if not pattern.match(line)]
-lines += [
-    "\n# Rice autostart\n",
-    "exec-once = waybar\n",
-    "exec-once = ~/.config/hypr/scripts/wallpaper-start.sh\n"
-]
-with open(p, "w", encoding="utf-8") as f:
-    f.writelines(lines)
-PY
-
-# Настройка Matugen для Awww
-python - "$M" <<'PY'
-import sys, re
-p = sys.argv[1]
-with open(p, encoding="utf-8") as f:
-    data = f.read()
-
-section = '''[config.wallpaper]
-command = "awww"
-arguments = ["img", "--transition-type", "any", "--transition-duration", "1.5"]
+[config.wallpaper]
+command = "swww"
+arguments = ["img", "--transition-type", "any", "--transition-fps", "60"]
 set = true
 
-'''
-if re.search(r'(?m)^\[config\.wallpaper\]', data):
-    data = re.sub(
-        r'(?ms)^\[config\.wallpaper\]\n.*?(?=^\[|\Z)',
-        section, data, count=1
-    )
-else:
-    data = section + data
+[templates.waybar]
+input_path = '~/.config/matugen/templates/colors.css'
+output_path = '~/.config/waybar/colors.css'
+post_hook = 'pkill -SIGUSR2 waybar'
 
-with open(p, "w", encoding="utf-8") as f:
-    f.write(data)
-PY
+[templates.kitty]
+input_path = '~/.config/matugen/templates/kitty-colors.conf'
+output_path = '~/.config/kitty/colors.conf'
+post_hook = "kill -SIGUSR1 $(pidof kitty)"
 
-# Демон и установка предыдущих обоев
-cat > "$S/wallpaper-start.sh" <<'SH'
-#!/usr/bin/env bash
-set -u
+[templates.hyprland]
+input_path = '~/.config/matugen/templates/hyprland-colors.conf'
+output_path = '~/.config/hypr/colors.conf'
+post_hook = 'hyprctl reload'
 
-W="$HOME/Pictures/wallpapers"
-LAST="$HOME/.config/hypr/current_wallpaper"
+[templates.gtk3]
+input_path = '~/.config/matugen/templates/gtk-colors.css'
+output_path = '~/.config/gtk-3.0/colors.css'
 
-if ! pgrep -u "$(id -u)" -x awww-daemon >/dev/null 2>&1; then
-    awww-daemon >> "$HOME/.cache/awww-daemon.log" 2>&1 &
-fi
+[templates.gtk4]
+input_path = '~/.config/matugen/templates/gtk-colors.css'
+output_path = '~/.config/gtk-4.0/colors.css'
 
-mkdir -p "$HOME/.cache"
+[templates.rofi]
+input_path = '~/.config/matugen/templates/rofi-colors.rasi'
+output_path = '~/.config/rofi/colors.rasi'
 
-for i in {1..50}; do
-    awww query >/dev/null 2>&1 && break
-    sleep 0.2
-done
+[templates.cava]
+input_path = '~/.config/matugen/templates/matugen-cava'
+output_path = '~/.config/cava/config'
+post_hook = "pkill -USR1 cava"
 
-if [[ -f "$LAST" ]]; then
-    IMAGE="$(readlink -f "$LAST")"
-elif [[ -f "$W/37.jpg" ]]; then
-    IMAGE="$W/37.jpg"
-else
-    IMAGE="$(find "$W" -maxdepth 1 -type f \
-      \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) \
-      -print -quit)"
-fi
+[templates.spicetify]
+input_path = '~/.config/matugen/templates/spotify-colors.ini'
+output_path = '~/.config/spicetify/Themes/text/color.ini'
 
-if [[ -n "${IMAGE:-}" && -f "$IMAGE" ]]; then
-    if command -v matugen >/dev/null; then
-        matugen image "$IMAGE" || awww img --transition-type fade "$IMAGE"
-    else
-        awww img --transition-type fade "$IMAGE"
-    fi
-fi
-SH
+[templates.vesktop]
+input_path = '~/.config/matugen/templates/midnight-discord.css'
+output_path = '~/.config/vesktop/themes/matugen.css'
 
-chmod +x "$S/wallpaper-start.sh"
+14:exec-once = nm-applet
+15:exec-once = waybar  
+16:exec-once = swww-daemon
+17:exec-once = blueman-applet
+18:exec-once = swaync
+19:exec-once = systemctl --user start hyprpolkitagent
+20:exec-once = hypridle
 
-# Новый выбор обоев
-cat > "$S/wppicker.sh" <<'SH'
-#!/usr/bin/env bash
-set -euo pipefail
-
-W="$HOME/Pictures/wallpapers"
-LAST="$HOME/.config/hypr/current_wallpaper"
-
-mkdir -p "$W"
-mapfile -d '' -t FILES < <(
-    find "$W" -maxdepth 1 -type f \
-      \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) \
-      -print0 | sort -z
-)
-
-((${#FILES[@]})) || {
-    notify-send "Wallpapers" "Папка с обоями пуста"
-    exit 1
-}
-
-SELECTED="$(printf '%s\n' "${FILES[@]##*/}" | rofi -dmenu -i -p 'Choose wallpaper')"
-[[ -n "$SELECTED" ]] || exit 0
-
-IMAGE="$W/$SELECTED"
-[[ -f "$IMAGE" ]] || exit 1
-
-mkdir -p "$(dirname "$LAST")"
-ln -sfn "$IMAGE" "$LAST"
-
-if ! matugen image "$IMAGE"; then
-    awww img --transition-type any "$IMAGE"
-fi
-SH
-
-chmod +x "$S/wppicker.sh"
-
-echo
-echo "Настройка завершена!"
-echo "Резервная копия: $B"
-echo "Обои: $W"
+"la": No such file or directory (os error 2)
+.rwxr-xr-x  493 lime 12 ноя 09:06  AirplaneMode.sh
+.rwxr-xr-x 1,6k lime 12 ноя 09:06  brightness.sh
+.rwxr-xr-x   20 lime 12 ноя 09:06  hyprlock.sh
+.rwxr-xr-x  262 lime 12 ноя 09:06  KillActiveProcess.sh
+.rwxr-xr-x   32 lime 12 ноя 09:06  screenshot.sh
+.rwxr-xr-x 3,7k lime 12 ноя 09:06  volume.sh
+.rwxr-xr-x 1,0k lime 12 ноя 09:06  waybarcava.sh
+.rwxr-xr-x 1,2k lime 12 ноя 09:06  WaybarLayout.sh
+.rwxr-xr-x 1,2k lime 12 ноя 09:06  WaybarStyles.sh
+.rwxr-xr-x   67 lime 12 ноя 09:06  wbrestart.sh
+.rwxr-xr-x   19 lime 12 ноя 09:06  Wlogout.sh
+.rwxr-xr-x  937 lime 12 ноя 09:23  wppicker.sh
