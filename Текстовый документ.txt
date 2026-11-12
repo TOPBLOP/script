@@ -1,5 +1,4 @@
 sed -i 's/swww-daemon/awww-daemon/g' ~/.config/hypr/hyprland.conf
 sed -i 's/swww/awww/g' ~/.config/hypr/scripts/*.sh ~/.config/matugen/config.toml 2>/dev/null
 chmod +x ~/.config/hypr/scripts/*.sh
-hyprctl reload
 
